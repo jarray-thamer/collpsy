@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// Session Dont touch !
+model Session {
+  id String @id
+  userId String
+  expiresAt DateTime
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  PSY
+  STUDENT
+}
+
+model User {
+  id String @id 
+  
+  email String @unique
+  hashedPassowrd String
+  isEmailVerified Boolean
+
+  firstName String
+  lastName String
+  avatar String?
+  birthDate DateTime?
+  phoneNumber String?
+  city String?
+
+  role Role @default(STUDENT)
+
+  sessions Session[]
+
+  verificationCode          String?
+  verificationCodeExpiresAt DateTime?
+
+  resetPasswordToken          String?
+  resetPasswordTokenExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations based on role
+  psychologist Psychologist?
+  student Student?
+
+  @@map("users")
+}
+
+model Psychologist{
+  userId String @id
+  CIN String
+  etablissement String
+  titre String
+  addressCabinet String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Student{
+  userId String @id
+  cartEtudiant String
+  level String
+  institution String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
