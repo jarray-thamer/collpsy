@@ -14,7 +14,7 @@ export async function signUp(
   credentials: SignUpData
 ): Promise<{ error: string }> {
   try {
-    // TODO: Create the cloudinary upload for avatar
+    
     const {  email, password, firstName, lastName, avatar, birthDate, phoneNumber, city, role } =
       signUpSchema.parse(credentials);
 
@@ -32,6 +32,9 @@ export async function signUp(
       return Math.floor(10000 + Math.random() * 90000); // Generates a number between 10000 and 99999
     };
 
+// upload avatar in cloudinary and get the url
+
+
     const randomNumber = generateNumber().toString();
     await prismadb.user.create({
       data: {
@@ -44,7 +47,7 @@ export async function signUp(
         phoneNumber,
         city,
         role,
-        hashedPassword,
+        hashedPassowrd: hashedPassword,
         isEmailVerified: false,
         verificationCodeExpiresAt: new Date(Date.now() + 60 * 60 * 1000), // Expires in 1 hour
         verificationCode: randomNumber,
