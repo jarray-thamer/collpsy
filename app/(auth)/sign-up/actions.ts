@@ -15,7 +15,7 @@ export async function signUp(
 ): Promise<{ error: string }> {
   try {
     
-    const {  email, password, firstName, lastName, avatar, birthDate, phoneNumber, city, role } =
+    const {  email, password,confirmPassword, firstName, lastName, avatar, birthDate, phoneNumber, city, role } =
       signUpSchema.parse(credentials);
 
     const existingUser = await prismadb.user.findFirst({
@@ -27,6 +27,9 @@ export async function signUp(
     }
 
     const userId = generateIdFromEntropySize(10);
+    if(password !== confirmPassword) {
+      return {error: "Password did not match !"}
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const generateNumber = () => {
       return Math.floor(10000 + Math.random() * 90000); // Generates a number between 10000 and 99999
@@ -47,7 +50,7 @@ export async function signUp(
         phoneNumber,
         city,
         role,
-        hashedPassowrd: hashedPassword,
+        hashedPassword,
         isEmailVerified: false,
         verificationCodeExpiresAt: new Date(Date.now() + 60 * 60 * 1000), // Expires in 1 hour
         verificationCode: randomNumber,

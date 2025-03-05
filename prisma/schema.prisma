@@ -32,7 +32,7 @@ model User {
   id String @id 
   
   email String @unique
-  hashedPassowrd String
+  hashedPassword String
   isEmailVerified Boolean
 
   firstName String
